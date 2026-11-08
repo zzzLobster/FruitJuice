@@ -172,7 +172,7 @@ jobs:
     # if they did, a green run would stop closing the issue a red run opened.
     env:
       ISSUE_TITLE: "Nightly: build fails against a newer Minecraft API"
-      NEXT_API: "1.21-R0.1-SNAPSHOT"
+      NEXT_API: "26.3.build.166-beta"
 
     steps:
       - uses: actions/checkout@v7
@@ -186,7 +186,7 @@ jobs:
       - name: Build and test against ${{ env.NEXT_API }}
         run: |
           mvn --batch-mode --no-transfer-progress \
-              -Dspigot.version=${NEXT_API} verify
+              -Dpaper.version=${NEXT_API} verify
 
       # Email alone is a weak alarm here. A nightly that stays broken for a
       # week sends seven identical emails, which is how an alarm becomes noise

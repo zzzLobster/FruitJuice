@@ -27,15 +27,15 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${spigot.version}</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.14.2</version>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -64,9 +64,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- A property so CI can build against a newer API without editing the pom:
-         mvn -Dspigot.version=1.21-R0.1-SNAPSHOT. The nightly job uses that to
+         mvn -Dpaper.version=1.21-R0.1-SNAPSHOT. The nightly job uses that to
          find out that a Minecraft release broke us before a user does. -->
-    <spigot.version>1.20-R0.1-SNAPSHOT</spigot.version>
+    <paper.version>26.3.build.166-beta</paper.version>
   </properties>
 
 </project>

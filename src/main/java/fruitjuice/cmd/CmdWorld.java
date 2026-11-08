@@ -2,10 +2,7 @@ package fruitjuice.cmd;
 
 import fruitjuice.FruitJuicePlugin;
 import fruitjuice.RemoteSession;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -22,6 +19,7 @@ import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collection;
 
@@ -115,6 +113,10 @@ public class CmdWorld {
 			Block thisBlock = world.getBlockAt(loc);
 			Material material = Material.valueOf(args[3]);
 
+			if (!material.isBlock()) {
+				session.send("Fail. Provided material must be a block.");
+				return;
+			}
 			// Build the data up front so a two-block shape can be checked for room
 			// before anything is written to the world.
 			BlockData blockData = material.createBlockData();
@@ -167,7 +169,7 @@ public class CmdWorld {
 				topBlock.setBlockData(top, false);
 
 			} else {
-				thisBlock.setBlockData(blockData, false);
+				thisBlock.setBlockData(blockData, true);
 			}
 
 			// world.setBlocks
@@ -183,7 +185,7 @@ public class CmdWorld {
 				return;
 			}
 
-			setCuboid(loc1, loc2, blockType);
+			setCuboid(loc1, loc2, blockType, volume <= MAX_FILL_WITH_PHYSICS_BLOCKS);
 
 			// world.getPlayerIds
 		} else if (command.equals("getPlayerIds")) {
@@ -321,7 +323,17 @@ public class CmdWorld {
 				}
 			}
 			session.send(bdr.toString());
-
+			// world.setting
+		} else if (command.equals("setting")) {
+			var settingName = args[0];
+			switch (settingName) {
+				case "world_immutable":
+					world.getPersistentDataContainer().set(new NamespacedKey("fruit_juice", "world_immutable"), PersistentDataType.BOOLEAN, args[1].equals("1"));
+					break;
+                default:
+					session.plugin.getLogger().warning("setting '" + settingName + "' is not supported.");
+					session.send("Fail,setting '" + settingName + "' is not supported.");
+			}
 		} else {
 			session.plugin.getLogger().warning(preFix + command + " is not supported.");
 			session.send("Fail," + preFix + command + " is not supported.");
@@ -339,6 +351,7 @@ public class CmdWorld {
 	 * any example here builds in a single call.
 	 */
 	static final long MAX_FILL_BLOCKS = 1_000_000L;
+	static final long MAX_FILL_WITH_PHYSICS_BLOCKS = 100L;
 
 	/** The most powerful explosion createExplosion will make. TNT is 4. */
 	static final float MAX_EXPLOSION_POWER = 20f;
@@ -352,7 +365,7 @@ public class CmdWorld {
 	}
 
 	// create a cuboid of lots of blocks
-	private void setCuboid(Location pos1, Location pos2, String blockType) {
+	private void setCuboid(Location pos1, Location pos2, String blockType, boolean applyPhysics) {
 		int minX, maxX, minY, maxY, minZ, maxZ;
 		World world = pos1.getWorld();
 		minX = pos1.getBlockX() < pos2.getBlockX() ? pos1.getBlockX() : pos2.getBlockX();
@@ -390,7 +403,7 @@ public class CmdWorld {
 				for (int y = minY; y <= maxY; ++y) {
 					Block block = world.getBlockAt(x, y, z);
 					if (block.getType() != material) {
-						block.setType(material, false);
+						block.setType(material, applyPhysics);
 					}
 				}
 			}

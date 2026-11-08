@@ -2,16 +2,20 @@ package fruitjuice;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetSocketAddress;
@@ -158,6 +162,20 @@ public class FruitJuicePlugin extends JavaPlugin implements Listener {
 	public void onArrowHit(ProjectileHitEvent event){
 		for (RemoteSession session : sessions) {
 			session.queueArrowHitEvent(event);
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onBreak(BlockBreakEvent e) {
+		if (e.getBlock().getWorld().getPersistentDataContainer().getOrDefault(new NamespacedKey("fruit_juice", "world_immutable"), PersistentDataType.BOOLEAN, false)) {
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPlace(BlockPlaceEvent e) {
+		if (e.getBlock().getWorld().getPersistentDataContainer().getOrDefault(new NamespacedKey("fruit_juice", "world_immutable"), PersistentDataType.BOOLEAN, false)) {
+			e.setCancelled(true);
 		}
 	}
 
