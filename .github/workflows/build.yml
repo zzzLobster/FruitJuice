@@ -37,7 +37,7 @@ jobs:
       # cancelled" tells you much less than seeing which versions passed.
       fail-fast: false
       matrix:
-        java: ["11", "17", "21"]
+        java: ["25"]
 
     steps:
       - uses: actions/checkout@v7
@@ -66,9 +66,9 @@ jobs:
           fail_on_failure: true
           require_tests: true
 
-      # Only from the Java 11 build, which is the bytecode we ship.
+      # Only from the Java 25 build, which is the bytecode we ship.
       - name: Upload the plugin jar
-        if: matrix.java == '11'
+        if: matrix.java == '25'
         uses: actions/upload-artifact@v7
         with:
           name: FruitJuice-jar
@@ -180,7 +180,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "25"
           cache: maven
 
       - name: Build and test against ${{ env.NEXT_API }}
